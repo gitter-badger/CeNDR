@@ -16,6 +16,7 @@ import hashlib
 import requests
 import decimal
 import itertools
+import csv
 from slugify import slugify
 import hashlib
 import simplejson as json
@@ -221,6 +222,8 @@ def public_mapping():
 @app.route("/report/<report_slug>/<trait_slug>")
 @app.route("/report/<report_slug>/<trait_slug>/<rerun>")
 def trait_view(report_slug, trait_slug="", rerun = None):
+    significant,tajima_d,axes = tajima_helper()
+    tajima_d = tajima_d[:10]
     report_data = list(trait.select(trait, report).join(report).where(((report.report_slug == report_slug) & (
         report.release == 0)) | (report.report_hash == report_slug)).dicts().execute())
     if trait_slug:
@@ -324,3 +327,28 @@ def status_page():
         trait.submission_complete.desc()).limit(10).dicts().execute())
 
     return render_template('status.html', **locals())
+
+def tajima_helper():
+    significant = []
+    tajimas = []
+    with open('tajima.csv', 'rb') as csvfile:
+        spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
+
+        for index,row in enumerate(spamreader):
+                if index > 0:
+                    temp = row[0].split('\t')
+                    new_row = [temp[0]]
+                    new_row = new_row + [float(x) for x in temp[1:]]
+                    tajima_d =new_row[-1]
+                    if tajima_d > 2.0 or tajima_d < -2.0:
+                        significant.append(new_row)
+                        tajimas.append({'x':new_row[1], 'y': tajima_d})
+
+        min_x = tajimas[0]['x']
+        max_x = tajimas[-1]['x']
+
+        min_y = tajimas[0]['y']
+        max_y = tajimas[-1]['y']
+
+        axes = {'x':[min_x,max_x], 'y': [min_y,max_y]} 
+    return significant,tajimas,axes
