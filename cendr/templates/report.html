@@ -306,11 +306,9 @@ A genome-wide representation of the association between variation in the <em>C. 
                   <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
                   <script>
                       var data = {{  tajima_d|tojson|safe }};
+                      console.log(data)
                       var colors = [
-                        'steelblue',
-                        'green',
-                        'red',
-                        'purple'
+                        'steelblue'
                       ]
 
                       var margin = {top: 20, right: 30, bottom: 80, left: 50},
@@ -318,7 +316,7 @@ A genome-wide representation of the association between variation in the <em>C. 
                           height = 500 - margin.top - margin.bottom;
                         
                       var x = d3.scale.linear()
-                          .domain([0  , {{axes['x'][1]}}])
+                          .domain([{{ axes['x'][0] }}, {{axes['x'][1]}}])
                           .range([0, width]);
                        
                       var y = d3.scale.linear()

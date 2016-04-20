@@ -223,7 +223,8 @@ def public_mapping():
 @app.route("/report/<report_slug>/<trait_slug>/<rerun>")
 def trait_view(report_slug, trait_slug="", rerun = None):
     significant,tajima_d,axes = tajima_helper()
-    tajima_d = tajima_d[:10]
+    tajima_d = tajima_d[:1000000:10]
+
     report_data = list(trait.select(trait, report).join(report).where(((report.report_slug == report_slug) & (
         report.release == 0)) | (report.report_hash == report_slug)).dicts().execute())
     if trait_slug:
@@ -338,11 +339,12 @@ def tajima_helper():
                 if index > 0:
                     temp = row[0].split('\t')
                     new_row = [temp[0]]
-                    new_row = new_row + [float(x) for x in temp[1:]]
+                    new_row = new_row + [round(float(x),3) for x in temp[1:]]
                     tajima_d =new_row[-1]
-                    if tajima_d > 2.0 or tajima_d < -2.0:
+                    genomic_position = int(new_row[1]) #This is for now
+                    if (tajima_d > 2.0 or tajima_d < -2.0) and (genomic_position >= 15000000  and  genomic_position <= 17500000):
                         significant.append(new_row)
-                        tajimas.append({'x':new_row[1], 'y': tajima_d})
+                        tajimas.append({'x':genomic_position, 'y': tajima_d})
 
         min_x = tajimas[0]['x']
         max_x = tajimas[-1]['x']

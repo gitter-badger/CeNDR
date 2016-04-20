@@ -218,12 +218,13 @@ class call(Model):
     FT = CharField(index = True)
     GT = CharField(index = True)
 
-# class invariants(Model):
-#     chrom = CharField(index=True)
-#     pos = IntegerField(index=True)
-#     _id = IntegerField(index=True)
-#     ref = CharField()
-#     alt
+class wi_20160326(Model):
+    Chrom = CharField(index=True)
+    Bin_Start = IntegerField(index=True)
+    Bin_End = IntegerField(index=True)
+    N_Sites = IntegerField(index=True)
+    N_SNPS = IntegerField(index=True)
+    TajimaD = DecimalField(index=True)
 
 
 
