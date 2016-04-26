@@ -219,7 +219,7 @@ class call(Model):
     GT = CharField(index = True)
 
 class wi_20160326(Model):
-    Chrom = CharField(index=True)
+    chrom = CharField(index=True)
     Bin_Start = IntegerField(index=True)
     Bin_End = IntegerField(index=True)
     N_Sites = IntegerField(index=True)

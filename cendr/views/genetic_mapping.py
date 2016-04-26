@@ -333,9 +333,9 @@ def tajima_helper():
     significant = []
     tajimas = []
     with open('tajima.csv', 'rb') as csvfile:
-        spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
+        reader = csv.reader(csvfile, delimiter=' ', quotechar='|')
 
-        for index,row in enumerate(spamreader):
+        for index,row in enumerate(reader):
                 if index > 0:
                     temp = row[0].split('\t')
                     new_row = [temp[0]]
