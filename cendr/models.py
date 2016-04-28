@@ -158,6 +158,16 @@ class trait_value(Model):
     class Meta:
         database = db
 
+class tajimaD(Model):
+    CHROM = CharField(index=True)
+    BIN_START = IntegerField(index=True)
+    BIN_END = IntegerField(index=True)
+    N_Sites = IntegerField(index=True)
+    N_SNPs = IntegerField(index=True)
+    TajimaD = DecimalField(index=True)
+
+    class Meta:
+        database = db
 
 class mapping(Model):
     """ Results of mappings. Unique on peak IDs and markers. """
@@ -218,13 +228,6 @@ class call(Model):
     FT = CharField(index = True)
     GT = CharField(index = True)
 
-class wi_20160326(Model):
-    chrom = CharField(index=True)
-    Bin_Start = IntegerField(index=True)
-    Bin_End = IntegerField(index=True)
-    N_Sites = IntegerField(index=True)
-    N_SNPS = IntegerField(index=True)
-    TajimaD = DecimalField(index=True)
 
 
 

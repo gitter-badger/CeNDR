@@ -27,19 +27,24 @@ else:
 
 db.connect()
 
-from models import *
+import models
 with db.atomic():
-  db.create_tables(['wi_20160326'], safe=True)
+  db.create_tables([tajimaD], safe=True)
 
 
 with open('tajima.csv', 'rb') as csvfile:
-  csv_reader = csv.reader(csvfile, delimiter='\t', quotechar='|')
+  print dir(csvfile)
+  lines = csv.DictReader(csvfile, delimiter='\t')
 
   tajima_d = []
-  for line in csv_reader:
-    tajima_d.append(line)
+  for index,line in enumerate(lines):
+      for k,v in line.items():
+        if k !='CHROM' and k != 'TajimaD':
+          line[k] = int(v)
 
+      line['TajimaD'] = round(float(line['TajimaD']),3)
+      if line:
+        tajima_d.append(line)
 
 with db.atomic():
-  wi_20160326.insert_many(strain_data).execute()
-
+  tajimaD.insert_many(tajima_d).execute()
