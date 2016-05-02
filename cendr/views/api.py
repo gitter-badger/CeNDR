@@ -1,7 +1,7 @@
 from flask import Flask, Response,request
 from flask_restful import Resource, Api,reqparse
 from cendr import api
-from cendr.models import db, report, mapping, strain, trait, site, call, annotation
+from cendr.models import db, report, mapping, strain, trait, site, call, annotation, tajimaD
 from collections import OrderedDict
 from gcloud import storage
 import decimal
@@ -74,6 +74,18 @@ class report_by_date(Resource):
   def get(self, date):
       print parse(date).date()
       data = list(trait.select(report.report_slug, report.report_name, trait.trait_name, trait.trait_slug, report.release, trait.submission_complete).join(report).filter((db.truncate_date("day", trait.submission_complete) == parse(date).date()),(report.release == 0), trait.status == "complete").dicts().execute())
+      dat = json.dumps(data, cls=CustomEncoder, indent = 4)
+      return Response(response=dat, status=200, mimetype="application/json")
+
+class tajima_d(Resource):
+  def get(self,chrom,start,end):
+      data = list(tajimaD.select(tajimaD.CHROM, tajimaD.BIN_START, tajimaD.BIN_END, tajimaD.TajimaD).filter(tajimaD.CHROM == chrom,
+                                                                                                            ((tajimaD.TajimaD >=  2.0) or
+                                                                                                            (tajimaD.TajimaD <= -2.0)),
+                                                                                                            ((tajimaD.BIN_START >=  start) and
+                                                                                                            (tajimaD.BIN_END <= end)),
+                                                                                                             ).dicts().execute())
+      print data
       dat = json.dumps(data, cls=CustomEncoder, indent = 4)
       return Response(response=dat, status=200, mimetype="application/json")
 
@@ -189,6 +201,5 @@ api.add_resource(site_gt_range_annotation, '/api/variants/annotation/<string:chr
 
 # Reports
 api.add_resource(report_by_date, '/api/report/date/<string:date>')
-
-
+api.add_resource(tajima_d, '/api/report/tajima/<string:chrom>/<int:start>/<int:end>')
 #api.add_resource(report_progress, *reports_urls)
