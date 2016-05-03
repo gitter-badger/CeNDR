@@ -80,7 +80,7 @@ class report_by_date(Resource):
 class tajima_d(Resource):
   def get(self,chrom,start,end):
       data = list(tajimaD.select(tajimaD.CHROM, tajimaD.BIN_START, tajimaD.BIN_END, tajimaD.TajimaD).filter(tajimaD.CHROM == chrom,
-                                                                                                            ((tajimaD.TajimaD >=  2.0) or
+                                                                                                            ((tajimaD.TajimaD >=  2.0) |
                                                                                                             (tajimaD.TajimaD <= -2.0)),
                                                                                                             ((tajimaD.BIN_START >=  start) and
                                                                                                             (tajimaD.BIN_END <= end)),
