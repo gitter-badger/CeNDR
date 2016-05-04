@@ -305,131 +305,140 @@ A genome-wide representation of the association between variation in the <em>C. 
               <div id="visualisation" width="1000" height="500"></div>
                   <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
                   <script>
-                      var data = {{  tajima_d|tojson|safe }};
-                      
-                      var colors = [
-                        'steelblue'
-                      ]
+                      $('#visualisation').ready(function() {
+                        $.ajax({
+                          url: "/api/report/tajima/"+ {{ chrom|tojson|safe }} + "/" + {{ start|tojson|safe }} + "/" + {{ end|tojson|safe }},
+                          success: function (data) {
+                            var colors = [
+                              'steelblue'
+                            ]
 
-                      var margin = {top: 20, right: 30, bottom: 80, left: 50},
-                          width = 960 - margin.left - margin.right,
-                          height = 500 - margin.top - margin.bottom;
-                        
-                      var x = d3.scale.linear()
-                          .domain([{{ axes['x'][0] }}, {{axes['x'][1]}}])
-                          .range([0, width]);
-                       
-                      var y = d3.scale.linear()
-                          .domain([{{axes['y'][0]}}-1, {{axes['y'][1]}} + 1 ])
-                          .range([height, 0]);
-                        
-                      var xAxis = d3.svg.axis()
-                          .scale(x)
-                          .tickSize(-height)
-                          .tickPadding(10)  
-                          .tickSubdivide(true)  
-                          .orient("bottom");  
-                        
-                      var yAxis = d3.svg.axis()
-                          .scale(y)
-                          .tickPadding(10)
-                          .tickSize(-width)
-                          .tickSubdivide(true)  
-                          .orient("left");
-                        
-                      var zoom = d3.behavior.zoom()
-                          .x(x)
-                          .y(y)
-                          .scaleExtent([1, 10])
-                          .on("zoom", zoomed) 
+                            var margin = {top: 20, right: 30, bottom: 80, left: 50},
+                                width = 960 - margin.left - margin.right,
+                                height = 500 - margin.top - margin.bottom;
+                            
+                            var axes = data.pop();
 
-                      var svg = d3.select("#visualisation").append("svg")
-                            .call(zoom)
-                              .attr("width", width + margin.left + margin.right)
-                              .attr("height", height + margin.top + margin.bottom)
-                            .append("g")
-                              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-                           
-                          svg.append("g")
-                              .attr("class", "x axis")
-                              .attr("transform", "translate(0," + height + ")")
-                              .call(xAxis);
+                            var x = d3.scale.linear()
+                                .domain([axes['min_x'], axes['max_x']])
+                                .range([0, width]);
+                             
+                            var y = d3.scale.linear()
+                                .domain([axes['min_y'], axes['max_y']])
+                                .range([height, 0]);
+                              
+                            var xAxis = d3.svg.axis()
+                                .scale(x)
+                                .tickSize(-height)
+                                .tickPadding(10)  
+                                .tickSubdivide(true)  
+                                .orient("bottom");  
+                              
+                            var yAxis = d3.svg.axis()
+                                .scale(y)
+                                .tickPadding(10)
+                                .tickSize(-width)
+                                .tickSubdivide(true)  
+                                .orient("left");
+                              
+                            var zoom = d3.behavior.zoom()
+                                .x(x)
+                                .y(y)
+                                .scaleExtent([1, 10])
+                                .on("zoom", zoomed) 
 
-                          svg.append("text")
-                            .attr("x", width/2)
-                            .attr("y", (margin.bottom) + 375)
-                            .style("text-anchor", "middle")
-                            .text('Genomic Position (Mb)')
-                            .attr('font-size', 14);  
-                           
-                          svg.append("g")
-                              .attr("class", "y axis")
-                              .call(yAxis);
-                           
-                          svg.append("g")
-                            .attr("class", "y axis")
-                            .append("text")
-                            .attr("class", "axis-label")
-                            .attr("transform", "rotate(-90)")
-                            .attr("y", (-margin.left) + 10)
-                            .attr("x", -height/2)
-                            .text('Tajima\'s D')
-                            .attr('font-size', 14);  ;
-                           
-                          svg.append("clipPath")
-                            .attr("id", "clip")
-                            .append("rect")
-                            .attr("width", width)
-                            .attr("height", height);
+                            var svg = d3.select("#visualisation").append("svg")
+                                  .call(zoom)
+                                    .attr("width", width + margin.left + margin.right)
+                                    .attr("height", height + margin.top + margin.bottom)
+                                  .append("g")
+                                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                                 
+                                svg.append("g")
+                                    .attr("class", "x axis")
+                                    .attr("transform", "translate(0," + height + ")")
+                                    .call(xAxis);
 
-                      var line = d3.svg.line()
-                            .interpolate("linear")  
-                            .x(function(d) { return x(d.x); })
-                            .y(function(d) { return y(d.y); });   
-                          
-                          svg.selectAll('.line').data(data)
-                            .enter()
-                            .append("path")
-                              .attr("class", "line")
-                            .attr("clip-path", "url(#clip)")
-                            .attr('stroke', function(d,i){      
-                              return colors[i%colors.length];
+                                svg.append("text")
+                                  .attr("x", width/2)
+                                  .attr("y", (margin.bottom) + 375)
+                                  .style("text-anchor", "middle")
+                                  .text('Genomic Position (Mb)')
+                                  .attr('font-size', 14);  
+                                 
+                                svg.append("g")
+                                    .attr("class", "y axis")
+                                    .call(yAxis);
+                                 
+                                svg.append("g")
+                                  .attr("class", "y axis")
+                                  .append("text")
+                                  .attr("class", "axis-label")
+                                  .attr("transform", "rotate(-90)")
+                                  .attr("y", (-margin.left) + 10)
+                                  .attr("x", -height/2)
+                                  .text('Tajima\'s D')
+                                  .attr('font-size', 14);  ;
+                                 
+                                svg.append("clipPath")
+                                  .attr("id", "clip")
+                                  .append("rect")
+                                  .attr("width", width)
+                                  .attr("height", height);
+
+                            var line = d3.svg.line()
+                                  .interpolate("linear")  
+                                  .x(function(d) { return x(d.x); })
+                                  .y(function(d) { return y(d.y); });   
+                                
+                                svg.selectAll('.line').data(data)
+                                  .enter()
+                                  .append("path")
+                                    .attr("class", "line")
+                                  .attr("clip-path", "url(#clip)")
+                                  .attr('stroke', function(d,i){      
+                                    return colors[i%colors.length];
+                                  })
+                                    .attr("d", line);   
+
+                            var points = svg.selectAll('.dots').data(data)
+                                  .enter()
+                                  .append("g")
+                                    .attr("class", "dots")
+                                  .attr("clip-path", "url(#clip)"); 
+                               
+                                points.selectAll('.dot').data(function(d, index){     
+                                    var a = [];
+                                    data.forEach(function(point,i){
+                                      a.push({'index': index, 'point': point});
+                                    });   
+                                    return a;
+                                  })
+                                  .enter()
+                                  .append('circle')
+                                  .attr('class','dot')
+                                  .attr("r", 2.5)
+                                  .attr('fill', function(d,i){
+                                    console.log(d);
+                                    console.log(i);
+                                    return colors[d.index%colors.length];
+                                  })  
+                                  .attr("transform", function(d) { 
+                                    return "translate(" + x(d.point.x) + "," + y(d.point.y) + ")"; }
+                                  );
+
+                            function zoomed() {
+                                  svg.select(".x.axis").call(xAxis);
+                                  svg.select(".y.axis").call(yAxis);   
+                                  svg.selectAll('path.line').attr('d', line);  
+                                 
+                                  points.selectAll('circle').attr("transform", function(d) { 
+                                    return "translate(" + x(d.point.x) + "," + y(d.point.y) + ")"; }
+                                  );  
+                                };
+                              }
                             })
-                              .attr("d", line);   
-
-                      var points = svg.selectAll('.dots').data(data)
-                            .enter()
-                            .append("g")
-                              .attr("class", "dots")
-                            .attr("clip-path", "url(#clip)"); 
-                         
-                          points.selectAll('.dot').data(function(d, index){     
-                              var a = [];
-                              data.forEach(function(point,i){
-                                a.push({'index': index, 'point': point});
-                              });   
-                              return a;
-                            })
-                            .enter()
-                            .append('circle')
-                            .attr('class','dot')
-                            .attr("r", 2.5)
-                            .attr('fill', function(d,i){ 
-                              return colors[d.index%colors.length];
-                            })  
-                            .attr("transform", function(d) { 
-                              return "translate(" + x(d.point.x) + "," + y(d.point.y) + ")"; }
-                            );
-
-                      function zoomed() {
-                            svg.select(".x.axis").call(xAxis);
-                            svg.select(".y.axis").call(yAxis);   
-                            svg.selectAll('path.line').attr('d', line);  
-                           
-                            points.selectAll('circle').attr("transform", function(d) { 
-                              return "translate(" + x(d.point.x) + "," + y(d.point.y) + ")"; }
-                            );  
-                          };
+                          })
                   </script>
           </div>
    

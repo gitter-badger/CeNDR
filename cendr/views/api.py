@@ -85,7 +85,28 @@ class tajima_d(Resource):
                                                                                                             ((tajimaD.BIN_START >=  start) and
                                                                                                             (tajimaD.BIN_END <= end)),
                                                                                                              ).dicts().execute())
-      print data
+      data = data[10]  
+      max_x = data[0]['BIN_END'] 
+      max_y = data[0]['TajimaD']
+      min_x = data[0]['BIN_START'],
+      min_y = max_y
+      for elem in data[1:]:
+        if elem['BIN_START'] < min_x:
+          min_x = elem['BIN_START']
+
+        if elem['BIN_END'] > max_x:
+          max_x = elem['BIN_END']
+
+        taj = elem['TajimaD']
+        elem['TajimaD'] = round(float(taj),3)
+        if taj < min_y:
+          min_y = taj
+
+        if taj > max_y:
+          max_y = taj
+
+      axes = {'min_x': min_x, 'max_x': max_x, 'min_y': min_y-1, 'max_y': max_y+1}
+      data.append(axes)
       dat = json.dumps(data, cls=CustomEncoder, indent = 4)
       return Response(response=dat, status=200, mimetype="application/json")
 

@@ -264,6 +264,9 @@ def trait_view(report_slug, trait_slug="", rerun = None):
 
     # Fetch significant mappings
     mapping_results = list(mapping.select(mapping, report, trait).join(trait).join(report).filter((report.report_slug == report_slug),(trait.trait_slug == trait_slug)).dicts().execute())
+    chrom = str(mapping_results[0]['chrom'])
+    start = mapping_results[0]['interval_start']
+    end = mapping_results[0]['interval_end']
     status = list(trait.select(report, trait).join(report).filter((report.report_slug == report_slug),(trait.trait_slug == trait_slug)).dicts().execute())[0]
 
     # List available datasets
