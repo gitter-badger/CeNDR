@@ -85,7 +85,7 @@ class tajima_d(Resource):
                                                                                                             ((tajimaD.BIN_START >=  start) and
                                                                                                             (tajimaD.BIN_END <= end)),
                                                                                                              ).dicts().execute())
-      data = data[10]  
+      data = data[:100]  
       max_x = data[0]['BIN_END'] 
       max_y = data[0]['TajimaD']
       min_x = data[0]['BIN_START'],

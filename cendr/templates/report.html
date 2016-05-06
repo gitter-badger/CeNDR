@@ -419,21 +419,19 @@ A genome-wide representation of the association between variation in the <em>C. 
                                   .attr('class','dot')
                                   .attr("r", 2.5)
                                   .attr('fill', function(d,i){
-                                    console.log(d);
-                                    console.log(i);
                                     return colors[d.index%colors.length];
                                   })  
                                   .attr("transform", function(d) { 
-                                    return "translate(" + x(d.point.x) + "," + y(d.point.y) + ")"; }
+                                    return "translate(" + x(d.point.BIN_START) + "," + y(d.point.BIN_END) + ")"; }
                                   );
-
+                            console.log(points)
                             function zoomed() {
                                   svg.select(".x.axis").call(xAxis);
                                   svg.select(".y.axis").call(yAxis);   
                                   svg.selectAll('path.line').attr('d', line);  
                                  
                                   points.selectAll('circle').attr("transform", function(d) { 
-                                    return "translate(" + x(d.point.x) + "," + y(d.point.y) + ")"; }
+                                    return "translate(" + x(d.point.BIN_START) + "," + y(d.point.BIN_END) + ")"; }
                                   );  
                                 };
                               }
