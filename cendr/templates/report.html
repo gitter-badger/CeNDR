@@ -305,6 +305,7 @@ A genome-wide representation of the association between variation in the <em>C. 
               <div id="visualisation" width="1000" height="500"></div>
                   <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
                   <script>
+                      console.log("/api/report/tajima/"+ {{ chrom|tojson|safe }} + "/" + {{ start|tojson|safe }} + "/" + {{ end|tojson|safe }},);
                       $('#visualisation').ready(function() {
                         $.ajax({
                           url: "/api/report/tajima/"+ {{ chrom|tojson|safe }} + "/" + {{ start|tojson|safe }} + "/" + {{ end|tojson|safe }},
